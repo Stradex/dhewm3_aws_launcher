@@ -1,0 +1,98 @@
+---
+- hosts: all
+  become: yes
+
+  vars_files:
+    - vars.yml
+
+  pre_tasks: 
+    - name: Update apt cache if needed.
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+  tasks:
+
+    - name: Install UFW
+      apt:
+        name: ufw
+        state: latest
+        update_cache: yes
+
+    - name: Allow SSH
+      ufw:
+        rule: allow
+        name: 'SSH'
+
+    - name: Allow Dhewm 3 master
+      ufw:
+        rule: allow
+        port: 27650
+        proto: any
+
+    - name: Allow Dhewm 3
+      ufw:
+        rule: allow
+        port: 27666
+        proto: any
+
+    - name: Enable UFW 
+      ufw:
+        state: enabled
+
+    - name: Install dhewm3 requirements
+      apt:
+        name:
+          - zip
+          - unzip
+          - libopenal1
+          - libsdl2-2.0-0
+
+    - name: Copy doom 3 base files
+      copy:
+        src: base/ 
+        dest: "{{ dhewm_dir }}/dhewm3/base/"
+
+    - name: Copy librecoop zip
+      copy:
+        src: librecoop_linux64.zip
+        dest: "{{ dhewm_dir }}/dhewm3/librecoop_linux64.zip"
+
+    - name: Expand Librecoop
+      unarchive:
+        remote_src: true
+        src:  "{{ dhewm_dir }}/dhewm3/librecoop_linux64.zip"
+        dest: "{{ dhewm_dir }}/dhewm3/"
+
+    - name: Copy librecoop content
+      copy:
+        remote_src: true
+        src: "{{ dhewm_dir }}/dhewm3/Librecoop_alpha_1.5_linux64/"
+        dest: "{{ dhewm_dir }}/dhewm3/"
+
+    - name: Downloading Dhewm 3
+      get_url:
+        url: "https://github.com/dhewm/dhewm3/releases/download/1.5.4/dhewm3-1.5.4_Linux_amd64.tar.gz"
+        dest: "{{ dhewm_dir }}/dhewm3.tar.gz"
+
+    - name: Expand Dhewm3
+      unarchive:
+        remote_src: true
+        src:  "{{ dhewm_dir }}/dhewm3.tar.gz"
+        dest: "{{ dhewm_dir }}"
+
+    - name: Launch Librecoop Server
+      command: >
+        screen -dmS dhewm3_server ./dhewm3ded
+        +set fs_game librecoop
+        +set si_gameType "{{ server_game_type }}"
+        +set si_map "{{ server_map }}"
+        +set si_name "{{ server_name }}"
+        +set si_usePass "{{ server_use_pass }}"
+        +set g_password "{{ server_pass }}"
+        +set si_maxPlayers "{{ server_max_players }}"
+        +spawnServer
+      become: yes
+      become_user: admin
+      args:
+        chdir: "{{ dhewm_dir }}/dhewm3/"

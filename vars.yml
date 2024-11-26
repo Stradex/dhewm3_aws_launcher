@@ -1,0 +1,9 @@
+---
+
+server_name: "EC2 AWS LibreCoop Server"
+dhewm_dir: /var/dhewm3
+server_use_pass: 0
+server_pass: ""
+server_map: "game/mars_city1.map"
+server_game_type: "Coop"
+server_max_players: 2

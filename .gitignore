@@ -1,0 +1,9 @@
+*.vim
+*.sw*
+*.zip
+*.pk4
+*.pem
+*.ini
+.terraform/
+.terraform*
+terraform.*
