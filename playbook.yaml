@@ -53,22 +53,29 @@
         src: base/ 
         dest: "{{ dhewm_dir }}/dhewm3/base/"
 
-    - name: Copy librecoop zip
+    - name: Copy mod zip
       copy:
-        src: librecoop_linux64.zip
-        dest: "{{ dhewm_dir }}/dhewm3/librecoop_linux64.zip"
+        src: "{{ mod_file }}"
+        dest: "{{ dhewm_dir }}/dhewm3/{{ mod_file }}"
+      when: 
+        - mod_enabled | bool
 
-    - name: Expand Librecoop
+    - name: Expand mod compressed file
       unarchive:
         remote_src: true
-        src:  "{{ dhewm_dir }}/dhewm3/librecoop_linux64.zip"
+        src:  "{{ dhewm_dir }}/dhewm3/{{ mod_file }}"
         dest: "{{ dhewm_dir }}/dhewm3/"
+      when: 
+        - mod_enabled | bool
 
-    - name: Copy librecoop content
+    - name: Copy mod content (Librecoop 1.5)
       copy:
         remote_src: true
         src: "{{ dhewm_dir }}/dhewm3/Librecoop_alpha_1.5_linux64/"
         dest: "{{ dhewm_dir }}/dhewm3/"
+      when: 
+        - mod_enabled | bool
+        - mod_name == 'librecoop_1.5'
 
     - name: Downloading Dhewm 3
       get_url:
@@ -81,10 +88,10 @@
         src:  "{{ dhewm_dir }}/dhewm3.tar.gz"
         dest: "{{ dhewm_dir }}"
 
-    - name: Launch Librecoop Server
+    - name: Launch Dhewm 3 Server
       command: >
         screen -dmS dhewm3_server ./dhewm3ded
-        +set fs_game librecoop
+        +set fs_game "{{ mod_folder }}"
         +set si_gameType "{{ server_game_type }}"
         +set si_map "{{ server_map }}"
         +set si_name "{{ server_name }}"

@@ -1,7 +1,18 @@
 ---
 
-server_name: "EC2 AWS LibreCoop Server"
 dhewm_dir: /var/dhewm3
+
+# Mod to install settings
+mod_enabled: true
+mod_name: "librecoop_1.5"
+mod_folder: "librecoop" # Used to specify fs_game
+mod_file: "Librecoop_alpha_1.5_linux64.zip"
+
+#This setting is for librecoop 1.5 only
+mod_file_folder: "Librecoop_alpha_1.5_linux64"
+
+# Server settings
+server_name: "EC2 AWS LibreCoop Server"
 server_use_pass: 0
 server_pass: ""
 server_map: "game/mars_city1.map"
